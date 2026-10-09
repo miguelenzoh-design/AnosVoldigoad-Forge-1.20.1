@@ -1,0 +1,35 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+group = 'com.anosvoldigoad'
+version = '1.0.0'
+base { archivesName = 'AnosVoldigoad' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    mappings channel: 'official', version: '1.20.1'
+    copyIdeResources = true
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'info'
+            mods { anosvoldigoad { source sourceSets.main } }
+        }
+        client {}
+        server { args '--nogui' }
+    }
+}
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.20.1-47.4.5'
+}
+tasks.named('processResources', ProcessResources).configure {
+    var props = [mod_id: 'anosvoldigoad', mod_name: 'Anos Voldigoad', mod_version: project.version]
+    inputs.properties props
+    filesMatching(['META-INF/mods.toml']) { expand props }
+}
+tasks.named('jar', Jar).configure {
+    manifest { attributes(['Specification-Title':'anosvoldigoad','Specification-Vendor':'Community','Specification-Version':'1','Implementation-Title':project.name,'Implementation-Version':project.version]) }
+    finalizedBy 'reobfJar'
+}
